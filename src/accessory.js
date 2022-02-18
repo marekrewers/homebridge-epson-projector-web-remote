@@ -64,7 +64,7 @@ class ProjectorSwitch {
         this.log.debug('Triggered GET ProgrammableSwitchOutputState');
 
         const timestamp = Date.now();
-        const requestUrl = `http://${ip}/${statusPath}${timestamp}`;
+        const requestUrl = `http://${ip}${statusPath}${timestamp}`;
 
         console.log({ requestUrl });
         try {
