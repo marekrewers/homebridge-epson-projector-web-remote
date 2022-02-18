@@ -2,7 +2,7 @@ module.exports = (api) => {
     api.registerAccessory('homebridge-epson-projector-web-remote', 'ProjectorSwitch', ProjectorSwitch);
 };
 
-const fetch = require('node-fetch-retry');
+const http = require('http');
 
 class ProjectorSwitch {
 
@@ -13,14 +13,14 @@ class ProjectorSwitch {
 
         this.defaults = {
             requestPath: '/cgi-bin/directsend',
-            referrerPath: '/cgi-bin/webconf',
+            refererPath: '/cgi-bin/webconf',
             statusPath: '/cgi-bin/json_query?jsoncallback=HDMILINK?%2001&_=',
             key: {
                 on_off: '3B',
             }
         }
 
-        this.config.referrer = `http://${this.config.ip}${this.defaults.referrerPath}`;
+        this.config.referer = `http://${this.config.ip}${this.defaults.refererPath}`;
 
         this.Service = this.api.hap.Service;
         this.Characteristic = this.api.hap.Characteristic;
@@ -58,7 +58,7 @@ class ProjectorSwitch {
      * Handle requests to get the current value of the "Programmable Switch Output State" characteristic
      */
     async getSwitchValue() {
-        const { ip, referrer } = this.config;
+        const { ip, referer } = this.config;
         const { statusPath } = this.defaults;
 
         this.log.debug('Triggered GET ProgrammableSwitchOutputState');
@@ -66,11 +66,11 @@ class ProjectorSwitch {
         const timestamp = Date.now();
         const requestUrl = `http://${ip}${statusPath}${timestamp}`;
 
-        console.log({ requestUrl, referrer });
+        console.log({ requestUrl, referer });
         try {
             const result = await fetch(requestUrl, {
                 headers: {
-                    Referrer: referrer,
+                    Referer: referer,
                 },
             });
 
@@ -109,7 +109,7 @@ class ProjectorSwitch {
     }
 
     async sendKeyCode(key) {
-        const { ip, referrer } = this.config;
+        const { ip, referer } = this.config;
         const { requestPath } = this.defaults;
         const timestamp = Date.now();
 
@@ -118,7 +118,7 @@ class ProjectorSwitch {
         try {
             const result = await fetch(requestUrl, {
                 headers: {
-                    Referrer: referrer,
+                    Referer: referer,
                 },
                 retry: 10,
                 pause: 1000,
