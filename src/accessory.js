@@ -51,10 +51,7 @@ class ProjectorSwitch {
     getSwitchEvent() {
         this.log.debug('Triggered GET ProgrammableSwitchEvent');
 
-        // set this to a valid value for ProgrammableSwitchEvent
-        const currentValue = this.Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS;
-
-        return currentValue;
+        return this.Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS
     }
 
     /**
@@ -62,6 +59,8 @@ class ProjectorSwitch {
      */
     async getSwitchValue() {
         const { ip } = this.config;
+        const { statusPath } = this.defaults;
+
         this.log.debug('Triggered GET ProgrammableSwitchOutputState');
 
         const timestamp = Date.now();
