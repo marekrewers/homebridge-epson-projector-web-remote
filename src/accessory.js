@@ -66,6 +66,7 @@ class ProjectorSwitch {
         const timestamp = Date.now();
         const requestUrl = `http://${ip}${statusPath}${timestamp}`;
 
+        console.log({ requestUrl, referrer });
         try {
             const result = await fetch(requestUrl, {
                 headers: {
