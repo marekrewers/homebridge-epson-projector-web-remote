@@ -31,6 +31,10 @@ class ProjectorSwitch {
         // create a new Stateful Programmable Switch service
         this.service = new this.Service(this.Service.StatefulProgrammableSwitch, '00000088-0000-1000-8000-0026BB765291');
 
+        this.informationService = new this.api.hap.Service.AccessoryInformation()
+            .setCharacteristic(this.api.hap.Characteristic.Manufacturer, "Lypzor")
+            .setCharacteristic(this.api.hap.Characteristic.Model, "EpsonSwitch");
+
         // create handlers for required characteristics
         this.service.getCharacteristic(this.Characteristic.ProgrammableSwitchEvent)
             .onGet(this.getSwitchEvent.bind(this));
@@ -124,5 +128,11 @@ class ProjectorSwitch {
             this.log.debug(`Failed sending key code: ${e.message}`);
             return e;
         }
+    }
+    getServices() {
+        return [
+            this.informationService,
+            this.service,
+        ];
     }
 }
