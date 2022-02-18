@@ -75,7 +75,8 @@ class ProjectorSwitch {
                 },
             });
 
-            console.log(result.body);
+            const xx = result.text();
+            console.log({ xx});
 
             const jsonResponse = result.json();
             const status = jsonResponse.projector.feature.reply === "01" ? 1 : 0; // on
