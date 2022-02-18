@@ -25,11 +25,9 @@ class ProjectorSwitch {
         this.Service = this.api.hap.Service;
         this.Characteristic = this.api.hap.Characteristic;
 
-        // extract name from config
         this.name = config.name;
 
-        // create a new Stateful Programmable Switch service
-        this.service = new this.Service(this.Service.Switch);
+        this.service = new this.Service.Switch(this.name);
 
         this.informationService = new this.api.hap.Service.AccessoryInformation()
         this.informationService.setCharacteristic(this.Characteristic.Manufacturer, "EPSON");
