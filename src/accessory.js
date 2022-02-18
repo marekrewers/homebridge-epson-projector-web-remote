@@ -76,19 +76,15 @@ class ProjectorSwitch {
         const { error } = this.log;
 
         try {
-            this.log({ value, char: this.Characteristic.On });
-            if (!this.Characteristic.On) {
-                await this.sendKeyCode(this.defaults.key.on_off);
-                this.projectorService.getCharacteristic(this.Characteristic.On)
-                    .updateValue(true);
-            } else {
-                await this.sendKeyCode(this.defaults.key.on_off);
+            await this.sendKeyCode(this.defaults.key.on_off);
+
+            if (value) {
                 await this.sleep(1000);
                 await this.sendKeyCode(this.defaults.key.on_off);
-
-                this.projectorService.getCharacteristic(this.Characteristic.On)
-                    .updateValue(false);
             }
+
+            this.projectorService.getCharacteristic(this.Characteristic.On)
+                .updateValue(value);
         } catch (e) {
             error(`Failed to set projector status value: ${e.message}`)
         }
