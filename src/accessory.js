@@ -99,9 +99,12 @@ class ProjectorSwitch {
                 .updateValue(true);
         } else {
             await this.sendKeyCode(this.defaults.key.on_off);
-            await this.sendKeyCode(this.defaults.key.on_off);
-            this.service.getCharacteristic(this.Characteristic.On)
-                .updateValue(false);
+            setTimeout(async () => {
+                await this.sendKeyCode(this.defaults.key.on_off);
+                this.service.getCharacteristic(this.Characteristic.On)
+                    .updateValue(false);
+            }, 1000);
+
         }
     }
 
@@ -110,7 +113,7 @@ class ProjectorSwitch {
         const { requestPath } = this.defaults;
         const timestamp = Date.now();
 
-        const requestUrl = `http://${ip}/${requestPath}?KEY=${key}&_=${timestamp}`;
+        const requestUrl = `http://${ip}${requestPath}?KEY=${key}&_=${timestamp}`;
 
         try {
             const result = await fetch(requestUrl, {
