@@ -73,6 +73,8 @@ class ProjectorSwitch {
                     Referer: referer,
                 },
             });
+
+            console.log({ result });
             const jsonResponse = result.json();
 
             // const xx = await result.text();
