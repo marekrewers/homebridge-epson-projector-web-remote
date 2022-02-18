@@ -10,6 +10,7 @@ class ProjectorSwitch {
         this.log = log;
         this.config = config;
         this.api = api;
+        this.name = config.name;
 
         this.defaults = {
             requestPath: '/cgi-bin/directsend',
@@ -25,41 +26,29 @@ class ProjectorSwitch {
         this.Service = this.api.hap.Service;
         this.Characteristic = this.api.hap.Characteristic;
 
-        this.name = config.name;
-
-        this.service = new this.Service.Switch(this.name, '00000049-0000-1000-8000-0026BB765291');
+        this.projectorService = new this.Service.Switch(this.name, '00000049-0000-1000-8000-0026BB765291');
 
         this.informationService = new this.Service.AccessoryInformation()
             .setCharacteristic(this.Characteristic.Manufacturer, "EPSON")
-            .setCharacteristic(this.Characteristic.SerialNumber, Date.now())
+            .setCharacteristic(this.Characteristic.SerialNumber, '0')
             .setCharacteristic(this.Characteristic.Identify, false)
             .setCharacteristic(this.Characteristic.Name, this.name)
             .setCharacteristic(this.Characteristic.Model, 'TW-5650')
             .setCharacteristic(this.Characteristic.FirmwareRevision, '1.0.0');
 
-        // create handlers for required characteristics
-        this.service.getCharacteristic(this.Characteristic.On)
+        this.projectorService.getCharacteristic(this.Characteristic.On)
             .onGet(this.getSwitchValue.bind(this))
             .onSet(this.setSwitchValue.bind(this));
     }
 
-    // /**
-    //  * Handle requests to get the current value of the "Programmable Switch Event" characteristic
-    //  */
-    // getSwitchEvent() {
-    //     this.log.debug('Triggered GET ProgrammableSwitchEvent');
-    //
-    //     return this.Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS;
-    // }
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
-    /**
-     * Handle requests to get the current value of the "Programmable Switch Output State" characteristic
-     */
     async getSwitchValue() {
         const { ip, referer } = this.config;
         const { statusPath } = this.defaults;
-
-        this.log.debug('Triggered GET ProgrammableSwitchOutputState');
+        const { error } = this.log;
 
         const timestamp = Date.now();
         const requestUrl = `http://${ip}${statusPath}${timestamp}`;
@@ -77,43 +66,40 @@ class ProjectorSwitch {
 
             const status = jsonResponse.projector.feature.reply === "01"; // on
 
-            this.log.debug(`Switch status is: ${status}`);
-            console.log(status, jsonResponse.projector.feature.reply);
-
             return status;
         } catch (e) {
-            console.log(`Failed to get switch value: ${e.message}`);
-            this.log.debug(`Failed to get switch value: ${e.message}`);
+            error(`Failed to get projector status: ${e.message}`);
         }
     }
 
-    /**
-     * Handle requests to set the "Programmable Switch Output State" characteristic
-     */
     async setSwitchValue(value) {
-        this.log.debug(`Triggered SET ProgrammableSwitchOutputState: ${value}`);
+        const { error } = this.log;
 
-        if (this.Characteristic.On === 0) {
-            await this.sendKeyCode(this.defaults.key.on_off);
-            this.service.getCharacteristic(this.Characteristic.On)
-                .updateValue(true);
-        } else {
-            await this.sendKeyCode(this.defaults.key.on_off);
-            setTimeout(async () => {
+        try {
+            this.log({ value, char: this.Characteristic.On });
+            if (!this.Characteristic.On) {
                 await this.sendKeyCode(this.defaults.key.on_off);
-                this.service.getCharacteristic(this.Characteristic.On)
-                    .updateValue(false);
-            }, 1000);
+                this.projectorService.getCharacteristic(this.Characteristic.On)
+                    .updateValue(true);
+            } else {
+                await this.sendKeyCode(this.defaults.key.on_off);
+                await this.sleep(1000);
+                await this.sendKeyCode(this.defaults.key.on_off);
 
+                this.projectorService.getCharacteristic(this.Characteristic.On)
+                    .updateValue(false);
+            }
+        } catch (e) {
+            error(`Failed to set projector status value: ${e.message}`)
         }
     }
 
     async sendKeyCode(key) {
         const { ip, referer } = this.config;
         const { requestPath } = this.defaults;
-        const timestamp = Date.now();
+        const { error } = this.log;
 
-        const requestUrl = `http://${ip}${requestPath}?KEY=${key}&_=${timestamp}`;
+        const requestUrl = `http://${ip}${requestPath}?KEY=${key}&_=${Date.now()}`;
 
         try {
             const result = await fetch(requestUrl, {
@@ -123,20 +109,16 @@ class ProjectorSwitch {
                 retry: 10,
                 pause: 1000,
             });
-
-            this.log.debug(`Requested key code ${key}`);
-
-            console.log(result);
             return result;
         } catch (e) {
-            this.log.debug(`Failed sending key code: ${e.message}`);
-            return e;
+            error(`Failed sending key code: ${e.message}`);
         }
     }
+
     getServices() {
         return [
             this.informationService,
-            this.service,
+            this.projectorService,
         ];
     }
 }
