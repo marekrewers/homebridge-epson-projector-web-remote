@@ -94,8 +94,6 @@ class ProjectorSwitch {
     async setSwitchValue(value) {
         this.log.debug(`Triggered SET ProgrammableSwitchOutputState: ${value}`);
 
-        // this.log.debug(`Triggered SET ProgrammableSwitchOutputState, current status is: ${status}`);
-
         if (this.Characteristic.ON === 0) {
             await this.sendKeyCode(this.defaults.key.on_off);
             this.service.updateCharacteristic(this.Characteristic.ON, 1);
