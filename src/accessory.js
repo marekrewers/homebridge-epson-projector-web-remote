@@ -1,5 +1,5 @@
 module.exports = (api) => {
-    api.registerAccessory('ProjectorSwitch', ProjectorSwitch);
+    api.registerAccessory('homebridge-epson-projector-web-remote', 'ProjectorSwitch', ProjectorSwitch);
 };
 
 const fetch = require('node-fetch-retry');
@@ -29,7 +29,7 @@ class ProjectorSwitch {
         this.name = config.name;
 
         // create a new Stateful Programmable Switch service
-        this.service = new this.Service(this.Service.StatefulProgrammableSwitch);
+        this.service = new this.Service(this.Service.StatefulProgrammableSwitch, '00000088-0000-1000-8000-0026BB765291');
 
         // create handlers for required characteristics
         this.service.getCharacteristic(this.Characteristic.ProgrammableSwitchEvent)
