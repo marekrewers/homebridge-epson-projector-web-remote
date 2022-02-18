@@ -29,7 +29,7 @@ class ProjectorSwitch {
         this.name = config.name;
 
         // create a new Stateful Programmable Switch service
-        this.service = new this.Service(this.Service.StatefulProgrammableSwitch, '00000088-0000-1000-8000-0026BB765291');
+        this.service = new this.Service(this.Service.Switch, '00000088-0000-1000-8000-0026BB765291');
 
         this.informationService = new this.api.hap.Service.AccessoryInformation()
             .setCharacteristic(this.api.hap.Characteristic.Manufacturer, "Lypzor")
@@ -39,10 +39,9 @@ class ProjectorSwitch {
         this.service.getCharacteristic(this.Characteristic.ProgrammableSwitchEvent)
             .onGet(this.getSwitchEvent.bind(this));
 
-        this.service.getCharacteristic(this.Characteristic.ProgrammableSwitchOutputState)
-            .onGet(this.getSwitchValue.bind(this))
-            .onSet(this.setSwitchValue.bind(this));
-
+        this.service.getCharacteristic(this.Characteristic.On)
+            .on('get', this.getSwitchValue.bind(this))
+            .on('set', this.setSwitchValue.bind(this));
     }
 
     /**
@@ -95,17 +94,16 @@ class ProjectorSwitch {
     async setSwitchValue(value) {
         this.log.debug(`Triggered SET ProgrammableSwitchOutputState: ${value}`);
 
-        const status = this.Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS;
-        this.log.debug(`Triggered SET ProgrammableSwitchOutputState, current status is: ${status}`);
+        // this.log.debug(`Triggered SET ProgrammableSwitchOutputState, current status is: ${status}`);
 
-        if (status === 0) {
+        if (this.Characteristic.ON === 0) {
             await this.sendKeyCode(this.defaults.key.on_off);
+            this.service.updateCharacteristic(this.Characteristic.ON, 1);
         } else {
             await this.sendKeyCode(this.defaults.key.on_off);
             await this.sendKeyCode(this.defaults.key.on_off);
+            this.service.updateCharacteristic(this.Characteristic.ON, 0);
         }
-
-        return;
     }
 
     async sendKeyCode(key) {
