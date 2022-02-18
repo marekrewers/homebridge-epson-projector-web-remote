@@ -66,6 +66,8 @@ class ProjectorSwitch {
 
             const status = jsonResponse.projector.feature.reply === "01"; // on
 
+            this.log({ status });
+
             return status;
         } catch (e) {
             error(`Failed to get projector status: ${e.message}`);
