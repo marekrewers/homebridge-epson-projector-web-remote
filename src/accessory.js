@@ -68,6 +68,7 @@ class ProjectorSwitch {
 
         console.log({ requestUrl, referer });
         try {
+            console.log('are we here?');
             const result = await fetch(requestUrl, {
                 headers: {
                     Referer: referer,
