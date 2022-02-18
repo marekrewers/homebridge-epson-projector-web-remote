@@ -1,0 +1,32 @@
+{
+  "name": "homebridge-epson-projector-web-remote",
+  "version": "1.0.0",
+  "description": "Homebridge plugin for controlling EPSON TW-5650 projector over web",
+  "main": "src/accessory.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Marek Rewers <rewers.marek@gmail.com>",
+  "engines": {
+    "homebridge": ">=1.4.0"
+  },
+  "keywords": [
+    "homebridge-plugin"
+  ],
+  "license": "ISC",
+  "files": [
+    "LICENSE",
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/marekrewers/homebridge-epson-projector-web-remote.git"
+  },
+  "bugs": {
+    "url": "http://github.com/marekrewers/homebridge-epson-projector-web-remote/issues"
+  },
+  "devDependencies": {
+    "homebridge": "^1.4.0",
+    "node-fetch-retry": "2.0.0"
+  }
+}
