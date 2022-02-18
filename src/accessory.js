@@ -71,7 +71,7 @@ class ProjectorSwitch {
             console.log('are we here?');
             const result = await fetch(requestUrl, {
                 headers: {
-                    Referer: referer,
+                    referer,
                 },
             });
 
@@ -88,6 +88,7 @@ class ProjectorSwitch {
 
             return status;
         } catch (e) {
+            console.log(e.message);
             this.log.debug(`Failed to get switch value: ${e.message}`);
         }
     }
