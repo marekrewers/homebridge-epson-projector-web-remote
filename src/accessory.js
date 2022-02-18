@@ -75,7 +75,7 @@ class ProjectorSwitch {
                 },
             });
 
-            const xx = result.text();
+            const xx = await result.text();
             console.log({ xx});
 
             const jsonResponse = result.json();
