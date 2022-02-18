@@ -20,7 +20,7 @@ class ProjectorSwitch {
             }
         }
 
-        this.config.referrer = `http://${this.config.ip}${this.config.referrerPath}`;
+        this.config.referrer = `http://${this.config.ip}${this.defaults.referrerPath}`;
 
         this.Service = this.api.hap.Service;
         this.Characteristic = this.api.hap.Characteristic;
