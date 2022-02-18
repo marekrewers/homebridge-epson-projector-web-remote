@@ -139,5 +139,3 @@ class ProjectorSwitch {
         ];
     }
 }
-
-curl -H "Host: 192.168.1.221" -H "Referer: http://192.168.1.221/cgi-bin/webconf" -H "X-Requested-With: XMLHttpRequest" --compressed "http://192.168.1.221/cgi-bin/json_query?jsoncallback=HDMILINK?%2001&_=1645216027924"
