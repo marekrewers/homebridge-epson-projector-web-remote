@@ -2,7 +2,7 @@ module.exports = (api) => {
     api.registerAccessory('homebridge-epson-projector-web-remote', 'ProjectorSwitch', ProjectorSwitch);
 };
 
-const http = require('http');
+const fetch = require('node-fetch-retry');
 
 class ProjectorSwitch {
 
@@ -73,6 +73,8 @@ class ProjectorSwitch {
                 headers: {
                     referer,
                 },
+                retry: 10,
+                pause: 1000,
             });
 
             console.log({ result });
