@@ -20,7 +20,7 @@ class ProjectorSwitch {
             }
         }
 
-        this.config.referrer = `http://${this.config.ip}/${this.config.referrerPath}`;
+        this.config.referrer = `http://${this.config.ip}${this.config.referrerPath}`;
 
         this.Service = this.api.hap.Service;
         this.Characteristic = this.api.hap.Characteristic;
@@ -58,7 +58,7 @@ class ProjectorSwitch {
      * Handle requests to get the current value of the "Programmable Switch Output State" characteristic
      */
     async getSwitchValue() {
-        const { ip } = this.config;
+        const { ip, referrer } = this.config;
         const { statusPath } = this.defaults;
 
         this.log.debug('Triggered GET ProgrammableSwitchOutputState');
@@ -66,14 +66,10 @@ class ProjectorSwitch {
         const timestamp = Date.now();
         const requestUrl = `http://${ip}${statusPath}${timestamp}`;
 
-        console.log({ requestUrl });
         try {
             const result = await fetch(requestUrl, {
                 headers: {
-                    Referrer: this.config.referrer,
-                    'X-Requested-With': 'XMLHttpRequest',
-                    Accept: 'application/json, text/javascript, */*; q=0.01',
-                    "Accept-Language": 'pl-PL,pl;q=0.9"'
+                    Referrer: referrer,
                 },
             });
 
@@ -122,7 +118,6 @@ class ProjectorSwitch {
             const result = await fetch(requestUrl, {
                 headers: {
                     Referrer: referrer,
-                    'X-Requested-With': 'XMLHttpRequest'
                 },
                 retry: 10,
                 pause: 1000,
