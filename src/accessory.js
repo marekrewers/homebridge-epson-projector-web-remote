@@ -29,7 +29,7 @@ class ProjectorSwitch {
         this.name = config.name;
 
         // create a new Stateful Programmable Switch service
-        this.service = new this.Service(this.Service.Switch, '00000088-0000-1000-8000-0026BB765291');
+        this.service = new this.Service(this.Service.Switch);
 
         this.informationService = new this.api.hap.Service.AccessoryInformation()
         this.informationService.setCharacteristic(this.Characteristic.Manufacturer, "EPSON");
@@ -77,7 +77,7 @@ class ProjectorSwitch {
 
             const jsonResponse = await result.json();
 
-            const status = jsonResponse.projector.feature.reply === "01" ? 1 : 0; // on
+            const status = jsonResponse.projector.feature.reply === "01"; // on
 
             this.log.debug(`Switch status is: ${status}`);
             console.log(status, jsonResponse.projector.feature.reply);
@@ -95,13 +95,13 @@ class ProjectorSwitch {
     async setSwitchValue(value) {
         this.log.debug(`Triggered SET ProgrammableSwitchOutputState: ${value}`);
 
-        if (this.Characteristic.ON === 0) {
+        if (this.Characteristic.On === 0) {
             await this.sendKeyCode(this.defaults.key.on_off);
-            this.service.updateCharacteristic(this.Characteristic.ON, 1);
+            this.service.updateCharacteristic(this.Characteristic.On, 1);
         } else {
             await this.sendKeyCode(this.defaults.key.on_off);
             await this.sendKeyCode(this.defaults.key.on_off);
-            this.service.updateCharacteristic(this.Characteristic.ON, 0);
+            this.service.updateCharacteristic(this.Characteristic.On, 0);
         }
     }
 
