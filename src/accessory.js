@@ -71,7 +71,9 @@ class ProjectorSwitch {
             const result = await fetch(requestUrl, {
                 headers: {
                     Referrer: this.config.referrer,
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'X-Requested-With': 'XMLHttpRequest',
+                    Accept: 'application/json, text/javascript, */*; q=0.01',
+                    "Accept-Language": 'pl-PL,pl;q=0.9"'
                 },
             });
 
@@ -142,3 +144,7 @@ class ProjectorSwitch {
         ];
     }
 }
+
+curl -H "Host: 192.168.1.221" -H "Accept-Language: pl-PL,pl;q=0.9" -H "X-Requested-With: XMLHttpRequest" --compressed "" +
+"http://192.168.1.221/cgi-bin/json_query?jsoncallback=HDMILINK?%2001&_=1645212892021"
+"http://192.168.1.221/cgi-bin/json_query?jsoncallback=HDMILINK?%2001&_=1645217860660
