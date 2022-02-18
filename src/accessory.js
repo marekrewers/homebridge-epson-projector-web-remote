@@ -73,11 +73,11 @@ class ProjectorSwitch {
                     Referer: referer,
                 },
             });
-
-            const xx = await result.text();
-            console.log({ xx});
-
             const jsonResponse = result.json();
+
+            // const xx = await result.text();
+            console.log(jsonResponse);
+
             const status = jsonResponse.projector.feature.reply === "01" ? 1 : 0; // on
 
             this.log.debug(`Switch status is: ${status}`);
