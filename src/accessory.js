@@ -35,6 +35,13 @@ class ProjectorSwitch {
             .setCharacteristic(this.api.hap.Characteristic.Manufacturer, "Lypzor")
             .setCharacteristic(this.api.hap.Characteristic.Model, "EpsonSwitch");
 
+        this.informationService.setCharacteristic(this.Characteristic.Manufacturer, "EPSON");
+        this.informationService.setCharacteristic(this.Characteristic.SerialNumber, new Date());
+        this.informationService.setCharacteristic(this.Characteristic.Identify, false);
+        this.informationService.setCharacteristic(this.Characteristic.Name, this.name);
+        this.informationService.setCharacteristic(this.Characteristic.Model, 'TW-5650');
+        this.informationService.setCharacteristic(this.Characteristic.FirmwareRevision, '1.0.0');
+
         // create handlers for required characteristics
         this.service.getCharacteristic(this.Characteristic.ProgrammableSwitchEvent)
             .onGet(this.getSwitchEvent.bind(this));
