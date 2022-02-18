@@ -12,6 +12,18 @@ class ProjectorSwitch {
         this.api = api;
         this.name = config.name;
 
+        this.Service = this.api.hap.Service;
+        this.Characteristic = this.api.hap.Characteristic;
+
+        const {
+            Manufacturer,
+            SerialNumber,
+            Identify,
+            Name,
+            Model,
+            FirmwareRevision,
+        } = this.Characteristic;
+
         this.defaults = {
             requestPath: '/cgi-bin/directsend',
             refererPath: '/cgi-bin/webconf',
@@ -23,18 +35,15 @@ class ProjectorSwitch {
 
         this.config.referer = `http://${this.config.ip}${this.defaults.refererPath}`;
 
-        this.Service = this.api.hap.Service;
-        this.Characteristic = this.api.hap.Characteristic;
-
         this.projectorService = new this.Service.Switch(this.name, '00000049-0000-1000-8000-0026BB765291');
 
         this.informationService = new this.Service.AccessoryInformation()
-            .setCharacteristic(this.Characteristic.Manufacturer, "EPSON")
-            .setCharacteristic(this.Characteristic.SerialNumber, '0')
-            .setCharacteristic(this.Characteristic.Identify, false)
-            .setCharacteristic(this.Characteristic.Name, this.name)
-            .setCharacteristic(this.Characteristic.Model, 'TW-5650')
-            .setCharacteristic(this.Characteristic.FirmwareRevision, '1.0.0');
+            .setCharacteristic(Manufacturer, "EPSON")
+            .setCharacteristic(SerialNumber, '0')
+            .setCharacteristic(Identify, false)
+            .setCharacteristic(Name, this.name)
+            .setCharacteristic(Model, 'TW-5650')
+            .setCharacteristic(FirmwareRevision, '1.0.0');
 
         this.projectorService.getCharacteristic(this.Characteristic.On)
             .onGet(this.getSwitchValue.bind(this))
@@ -50,8 +59,7 @@ class ProjectorSwitch {
         const { statusPath } = this.defaults;
         const { error } = this.log;
 
-        const timestamp = Date.now();
-        const requestUrl = `http://${ip}${statusPath}${timestamp}`;
+        const requestUrl = `http://${ip}${statusPath}${Date.now()}`;
 
         try {
             const result = await fetch(requestUrl, {
@@ -63,10 +71,7 @@ class ProjectorSwitch {
             });
 
             const jsonResponse = await result.json();
-
             const status = jsonResponse.projector.feature.reply === "01"; // on
-
-            this.log({ status });
 
             return status;
         } catch (e) {
@@ -74,19 +79,21 @@ class ProjectorSwitch {
         }
     }
 
-    async setSwitchValue(value) {
+    async setSwitchValue(state) {
+        const { On } = this.Characteristic;
+        const { on_off } = this.defaults.key;
         const { error } = this.log;
 
         try {
-            await this.sendKeyCode(this.defaults.key.on_off);
+            await this.sendKeyCode(on_off);
 
-            if (value) {
+            if (!state) {
                 await this.sleep(1000);
-                await this.sendKeyCode(this.defaults.key.on_off);
+                await this.sendKeyCode(on_off);
             }
 
-            this.projectorService.getCharacteristic(this.Characteristic.On)
-                .updateValue(value);
+            this.projectorService.getCharacteristic(On)
+                .updateValue(state);
         } catch (e) {
             error(`Failed to set projector status value: ${e.message}`)
         }
