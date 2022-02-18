@@ -119,6 +119,8 @@ class ProjectorSwitch {
                     Referrer: referrer,
                     'X-Requested-With': 'XMLHttpRequest'
                 },
+                retry: 10,
+                pause: 1000,
             });
 
             this.log.debug(`Requested key code ${key}`);
