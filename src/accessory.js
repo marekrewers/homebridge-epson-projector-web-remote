@@ -1,5 +1,5 @@
 module.exports = (api) => {
-    api.registerAccessory('homebridge-epson-projector-web-remote', 'ProjectorSwitch', ProjectorSwitch);
+    api.registerAccessory('ProjectorSwitch', ProjectorSwitch);
 };
 
 const fetch = require('node-fetch-retry');
