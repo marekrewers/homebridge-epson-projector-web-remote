@@ -61,6 +61,7 @@ class ProjectorSwitch {
      * Handle requests to get the current value of the "Programmable Switch Output State" characteristic
      */
     async getSwitchValue() {
+        const { ip } = this.config;
         this.log.debug('Triggered GET ProgrammableSwitchOutputState');
 
         const timestamp = Date.now();
