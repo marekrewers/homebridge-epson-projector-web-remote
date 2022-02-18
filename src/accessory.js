@@ -51,7 +51,7 @@ class ProjectorSwitch {
     getSwitchEvent() {
         this.log.debug('Triggered GET ProgrammableSwitchEvent');
 
-        return this.Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS
+        return this.Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS;
     }
 
     /**
@@ -66,9 +66,7 @@ class ProjectorSwitch {
         const timestamp = Date.now();
         const requestUrl = `http://${ip}${statusPath}${timestamp}`;
 
-        console.log({ requestUrl, referer });
         try {
-            console.log('are we here?');
             const result = await fetch(requestUrl, {
                 headers: {
                     referer,
@@ -77,20 +75,16 @@ class ProjectorSwitch {
                 pause: 1000,
             });
 
-            console.log({ result });
             const jsonResponse = await result.json();
-
-            // const xx = await result.text();
-            console.log({ jsonResponse, result });
 
             const status = jsonResponse.projector.feature.reply === "01" ? 1 : 0; // on
 
             this.log.debug(`Switch status is: ${status}`);
-            console.log(result);
+            console.log(status, jsonResponse.projector.feature.reply);
 
             return status;
         } catch (e) {
-            console.log(e.message);
+            console.log(`Failed to get switch value: ${e.message}`);
             this.log.debug(`Failed to get switch value: ${e.message}`);
         }
     }
