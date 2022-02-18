@@ -40,8 +40,8 @@ class ProjectorSwitch {
             .onGet(this.getSwitchEvent.bind(this));
 
         this.service.getCharacteristic(this.Characteristic.On)
-            .on('get', this.getSwitchValue.bind(this))
-            .on('set', this.setSwitchValue.bind(this));
+            .onGet(this.getSwitchValue.bind(this))
+            .onSet(this.setSwitchValue.bind(this));
     }
 
     /**
