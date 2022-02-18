@@ -27,15 +27,15 @@ class ProjectorSwitch {
 
         this.name = config.name;
 
-        this.service = new this.Service.Switch(this.name);
+        this.service = new this.Service.Switch(this.name, '00000049-0000-1000-8000-0026BB765291');
 
-        this.informationService = new this.api.hap.Service.AccessoryInformation()
-        this.informationService.setCharacteristic(this.Characteristic.Manufacturer, "EPSON");
-        this.informationService.setCharacteristic(this.Characteristic.SerialNumber, Date.now());
-        this.informationService.setCharacteristic(this.Characteristic.Identify, false);
-        this.informationService.setCharacteristic(this.Characteristic.Name, this.name);
-        this.informationService.setCharacteristic(this.Characteristic.Model, 'TW-5650');
-        this.informationService.setCharacteristic(this.Characteristic.FirmwareRevision, '1.0.0');
+        this.informationService = new this.Service.AccessoryInformation()
+            .setCharacteristic(this.Characteristic.Manufacturer, "EPSON")
+            .setCharacteristic(this.Characteristic.SerialNumber, Date.now())
+            .setCharacteristic(this.Characteristic.Identify, false)
+            .setCharacteristic(this.Characteristic.Name, this.name)
+            .setCharacteristic(this.Characteristic.Model, 'TW-5650')
+            .setCharacteristic(this.Characteristic.FirmwareRevision, '1.0.0');
 
         // create handlers for required characteristics
         this.service.getCharacteristic(this.Characteristic.On)
@@ -95,11 +95,13 @@ class ProjectorSwitch {
 
         if (this.Characteristic.On === 0) {
             await this.sendKeyCode(this.defaults.key.on_off);
-            this.service.updateCharacteristic(this.Characteristic.On, 1);
+            this.service.getCharacteristic(this.Characteristic.On)
+                .updateValue(true);
         } else {
             await this.sendKeyCode(this.defaults.key.on_off);
             await this.sendKeyCode(this.defaults.key.on_off);
-            this.service.updateCharacteristic(this.Characteristic.On, 0);
+            this.service.getCharacteristic(this.Characteristic.On)
+                .updateValue(false);
         }
     }
 
