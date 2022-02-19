@@ -57,6 +57,10 @@ class ProjectorSwitch {
     }
 
     async getSwitchValue() {
+        const { overrideProjectorState, actionTimestamp  } = this;
+
+        this.log({ overrideProjectorState, overdue: actionTimestamp + 10000 < Date.now() })
+
         if (this.overrideProjectorState && this.actionTimestamp + 10000 < Date.now()) {
             return true;
         } else {
