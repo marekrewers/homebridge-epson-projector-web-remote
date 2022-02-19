@@ -2,7 +2,7 @@ module.exports = (api) => {
     api.registerAccessory('ProjectorSwitch', ProjectorSwitch);
 };
 
-const fetch = require('node-fetch-retry');
+const fetch = require('node-fetch');
 
 class ProjectorSwitch {
 
@@ -57,16 +57,18 @@ class ProjectorSwitch {
     }
 
     async getSwitchValue() {
-        if (this.overrideProjectorState && this.actionTimestamp + 10000 < Date.now()) {
+
+        // keep status 'ON' for 14 seconds since boot up.
+        if (this.overrideProjectorState && this.actionTimestamp + 14000 < Date.now()) {
             return true;
         } else {
             this.actionTimestamp = 0;
             this.overrideProjectorState = false;
         }
 
-        const { ip, referer } = this.config;
-        const { statusPath } = this.defaults;
-        const { error } = this.log;
+        const {ip, referer} = this.config;
+        const {statusPath} = this.defaults;
+        const {error} = this.log;
 
         const requestUrl = `http://${ip}${statusPath}${Date.now()}`;
 
@@ -75,14 +77,11 @@ class ProjectorSwitch {
                 headers: {
                     referer,
                 },
-                retry: 10,
-                pause: 1000,
             });
 
             const jsonResponse = await result.json();
-            const status = jsonResponse.projector.feature.reply === "01"; // on
 
-            return status;
+            return jsonResponse.projector.feature.reply === '01'
         } catch (e) {
             error(`Failed to get projector status: ${e.message}`);
         }
@@ -94,7 +93,7 @@ class ProjectorSwitch {
         const { error } = this.log;
 
         try {
-            await this.sendKeyCode(on_off);
+            await this.sendKeyCode(on_off, state);
 
             this.overrideProjectorState = state;
 
@@ -109,27 +108,25 @@ class ProjectorSwitch {
 
             this.projectorService.getCharacteristic(On)
                 .updateValue(state);
+
         } catch (e) {
             error(`Failed to set projector status value: ${e.message}`)
         }
     }
 
-    async sendKeyCode(key) {
-        const { ip, referer } = this.config;
-        const { requestPath } = this.defaults;
-        const { error } = this.log;
+    async sendKeyCode(key, state) {
+        const {ip, referer} = this.config;
+        const {requestPath} = this.defaults;
+        const {error} = this.log;
 
         const requestUrl = `http://${ip}${requestPath}?KEY=${key}&_=${Date.now()}`;
 
         try {
-            const result = await fetch(requestUrl, {
-                headers: {
-                    Referer: referer,
-                },
-                retry: 10,
-                pause: 1000,
-            });
-            return result;
+            if (state) {
+                return fetch(requestUrl, {headers: {Referer: referer}});
+            } else {
+                await fetch(requestUrl, {headers: {Referer: referer}});
+            }
         } catch (e) {
             error(`Failed sending key code: ${e.message}`);
         }
