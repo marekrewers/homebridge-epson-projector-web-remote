@@ -14,6 +14,7 @@ class ProjectorSwitch {
 
         this.Service = this.api.hap.Service;
         this.Characteristic = this.api.hap.Characteristic;
+        this.timestamp = Date.now() - 10000;
 
         const {
             Manufacturer,
@@ -55,6 +56,11 @@ class ProjectorSwitch {
     }
 
     async getSwitchValue() {
+        // Return true if projector has been turned on in last 10 seconds
+        if (this.timestamp + 10000 < Date.now()) {
+            return true;
+        }
+
         const { ip, referer } = this.config;
         const { statusPath } = this.defaults;
         const { error } = this.log;
@@ -87,7 +93,10 @@ class ProjectorSwitch {
         try {
             await this.sendKeyCode(on_off);
 
-            if (!state) {
+            if (state) {
+                // keep the switch 'on' for a few seconds after powering the projector.
+                this.timestamp = Date.now();
+            } else {
                 await this.sleep(1000);
                 await this.sendKeyCode(on_off);
             }
