@@ -57,9 +57,8 @@ class ProjectorSwitch {
     }
 
     async getSwitchValue() {
-        const { overrideProjectorState, actionTimestamp  } = this;
 
-        this.log({ overrideProjectorState, overdue: actionTimestamp + 10000 < Date.now() })
+        this.log({ overrideProjectorState: this.overrideProjectorState, overdue: this.actionTimestamp + 10000 < Date.now() })
 
         if (this.overrideProjectorState && this.actionTimestamp + 10000 < Date.now()) {
             return true;
@@ -93,7 +92,6 @@ class ProjectorSwitch {
     }
 
     async setSwitchValue(state) {
-        const { On } = this.Characteristic;
         const { on_off } = this.defaults.key;
         const { error } = this.log;
 
@@ -110,7 +108,7 @@ class ProjectorSwitch {
                 await this.sendKeyCode(on_off);
             }
 
-            this.projectorService.getCharacteristic(On)
+            this.projectorService.getCharacteristic(this.Characteristic.On)
                 .updateValue(state);
         } catch (e) {
             error(`Failed to set projector status value: ${e.message}`)
