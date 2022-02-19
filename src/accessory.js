@@ -109,7 +109,7 @@ class ProjectorSwitch {
             }
 
             this.projectorService.getCharacteristic(this.Characteristic.On)
-                .updateValue(state);
+                .setValue(state);
         } catch (e) {
             error(`Failed to set projector status value: ${e.message}`)
         }
